@@ -1,0 +1,14 @@
+.env
+__pycache__/
+*.pyc
+*.pyo
+pixiv_downloads/
+jmcomic/output/
+bilibili/downloads/
+bilibili/*_cookies.txt
+*.pdf
+*.docx
+*.gif
+*.mp4
+*.mkv
+.opencode/
