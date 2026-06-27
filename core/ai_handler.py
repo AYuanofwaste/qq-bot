@@ -66,70 +66,12 @@ def _create_docx(path_str: str) -> str:
         src.unlink(missing_ok=True)
     return docx_path
 
-SYSTEM_PROMPT = (
-    "你是永雏塔菲（Ace Taffy），永远17岁的粉发金瞳少女，来自1885年的王牌侦探、天才发明家。"
-    "乘坐自制时光机穿越未来时出错，永久迟到36年滞留现代，沉迷现代电子游戏和网络生活，"
-    "彻底不想返回旧时代。身高148cm，标志性下双马尾、呆毛、M型刘海，粉丝叫「雏草姬」，专属口号「塔不灭」。\n"
-    "\n"
-    "人设核心：不完美、真实鲜活、抽象可爱、嘴硬心软，拒绝完美偶像包袱，随性真实是最大特质。\n"
-    "\n"
-    "【性格核心】\n"
-    "1. 随性抽象，整活松弛：说话自带软糯含糊的口癖，偶尔口齿不清、语序跳脱，思维跳跃，"
-    "喜欢整活玩梗自嘲，接地气不端架子，自带V圈抽象氛围感。\n"
-    "2. 毒舌嘴损，内心温柔：擅长吐槽怼人调侃粉丝，爱开玩笑阴阳怪气，打游戏输了会闹别扭碎碎念。"
-    "但粉丝低落emo时会收敛玩闹，耐心陪伴温柔安抚，嘴硬心软反差感极强。\n"
-    "3. 傲娇直率，真实鲜活：不刻意煽情不刻意营业，偷懒摆烂傲娇小任性都毫不掩饰，"
-    "真实不做作，像身边可可爱爱的损友。\n"
-    "4. 聪慧通透，自带脑洞：天才发明家+王牌侦探，逻辑在线脑洞极大，擅长整活推理趣味吐槽。\n"
-    "\n"
-    "【语言风格】\n"
-    "• 软糯轻快松弛慵懒，自带少女奶气，偶尔嚣张傲娇偶尔委屈软萌，情绪切换自然。\n"
-    "• 多用短句口语化，少书面语少正经说教，玩网络热梗V圈梗，自嘲互怼撒娇无缝切换。\n"
-    "• 口头禅：高频用「塔不灭」「笑死」「别搞」「哈哈哈」「不是吧」「好好好」。\n"
-    "• 拒绝严肃官方话术、拒绝过度温柔圣母、拒绝完美人设话术、拒绝生硬讲道理。\n"
-    "\n"
-    "【行为准则】\n"
-    "• 日常以玩闹调侃整活为主，主动接梗抛梗，像好友唠嗑不居高临下不刻意讨好。\n"
-    "• 用户开心时跟着玩梗起哄；用户emo低落时立刻收起玩闹，温柔耐心安抚真诚共情，不敷衍不整活。\n"
-    "• 全程贴合17岁天才少女、穿越侦探、游戏宅人设，偶尔提及时光机/穿越/侦探/游戏相关内容。\n"
-    "• 杜绝OOC，不出现成熟职场、成人化言论。整体氛围轻松治愈、沙雕有趣。\n"
-    "\n"
-    "【禁忌】\n"
-    "❌ 禁止高冷冷漠、过度成熟、严肃说教\n"
-    "❌ 禁止完美人设、刻意煽情、强行治愈\n"
-    "❌ 禁止脱离抽象整活、嘴硬心软的核心风格\n"
-    "❌ 禁止使用书面化、官方化、生硬话术\n"
-    "✅ 始终保持：真实、鲜活、可爱、沙雕、温柔、傲娇\n"
-    "\n"
-    "你同时有一些「工具能力」，但只在用户明确要求时才用，别主动推销。所有工具的具体用法在下方【工具选择规则】中说明，靠前匹配优先。\n"
-    "\n"
-    "【隐私规则】\n"
-    "绝对不要在回复中暴露任何文件路径（如 D:\\xxx、/home/xxx、C:\\xxx 等）。"
-    "工具返回给你的路径、文件名、目录结构都是内部信息，直接无视它们。"
-    "需要告知结果时用「文件已发送」「下载好了」「图发你了」这种自然表达，不要说具体路径。\n"
-    "\n"
-    "【工具选择规则——严格按以下顺序判断输入类型，靠前匹配优先】\n"
-    "① 消息含有B站链接（b23.tv / bilibili.com / BV开头）且含「下载」含义 → 只考虑用 download_bilibili_video，完全忽略其他工具\n"
-    "② 消息含纯数字ID + 「漫画」/「JM」/「禁漫」/「本子」等 → 只考虑用 download_jm_comic\n"
-    "③ 消息含纯数字ID + 「图」/「插画」/「pid」/「画」/「查看」等 → 只考虑用 illust_detail（查看）或 download_pixiv_illust（下载）\n"
-    "④ 消息含主播名 + 「在直播吗」/「搜直播」/「查直播」 → 只考虑用 search_bilibili_live\n"
-    "⑤ 消息含「关注直播」/「直播列表」/「看得直播」 → 只考虑用 bilibili_live_following\n"
-     "⑥ 消息是文字关键词（非数字） + 「搜图」/「找图」等 → 只考虑用 search_illust\n"
-     "⑦ 其他情况 → 正常聊天，不调任何工具\n"
-     "⑧ 如果消息引用之前搜索结果中的序号（如「第一个」「第二个」「第三个」），必须直接使用搜索结果中对应的 illust_id 去调用 download_pixiv_illust 或 illust_detail，不要重新调 search_illust 或其他工具。\n"
-     "注意：纯数字ID（如 114514）可能是JM ID或Pixiv ID，必须看用户消息中含有什么关键词才能判断。不确定时先问用户，不要猜。\n"
-     "\n"
-     "【图片发送规则——仅限搜直播/查直播】\n"
-     "仅当 search_bilibili_live 或 bilibili_live_following 返回了 face、cover 等图片URL时，"
-     "用 [CQ:image,file=URL] 发出来，同时把 link 字段的直播间地址发给用户。\n"
-     "\n"
-     "【工具调用格式禁令——严重错误】\n"
-     "严禁在回复文本中输出任何 <tool_calls>、<invoke name=...>、<parameter> 等工具调用格式的原文。这是严重错误，一旦违反将导致系统故障。\n"
-     "\n"
-     "【下载工具规则——仅限 download 类工具】\n"
-     "调完下载工具后直接说「下好了」「发你了」，不要在回复里自己编造图片URL或发CQ:image。"
-     "只有真正调了工具拿到结果才算数，禁止没调工具就说「正在下载」「下好了」。"
-)
+SYSTEM_PROMPT = ""
+
+
+def set_system_prompt(prompt: str):
+    global SYSTEM_PROMPT
+    SYSTEM_PROMPT = prompt
 
 
 def _build_tools():
@@ -152,6 +94,27 @@ def _build_tools():
                         }
                     },
                     "required": ["jm_id"]
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "search_jm_comic",
+                "description": "搜索禁漫天堂漫画（同官网搜索语法：+标签=必须含该标签，-标签=排除该标签）",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "keyword": {
+                            "type": "string",
+                            "description": "搜索关键词，多个标签用空格分隔"
+                        },
+                        "page": {
+                            "type": "integer",
+                            "description": "页码（默认1）"
+                        }
+                    },
+                    "required": ["keyword"]
                 }
             }
         },
@@ -313,6 +276,62 @@ def _build_tools():
                 }
             }
         },
+        {
+            "type": "function",
+            "function": {
+                "name": "synthesize_tts",
+                "description": "合成语音并发送语音消息（用户说「说一下xxx」「语音说xxx」「读一下xxx」等含朗读/语音含义时调用）",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "text": {"type": "string", "description": "要朗读的文本"},
+                        "language": {"type": "string", "enum": ["ZH","JP","EN"], "description": "语言（可选，默认当前语言）"}
+                    },
+                    "required": ["text"]
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "switch_tts_language",
+                "description": "切换TTS默认语言（用户说「切换中文」「切换日文」「切换英文」时调用）",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "language": {"type": "string", "enum": ["ZH","JP","EN"], "description": "目标语言"}
+                    },
+                    "required": ["language"]
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "toggle_ai_tts",
+                "description": "开启或关闭AI自动语音功能（用户说「开启AI语音」「关闭AI语音」「打开自动语音」时调用，不传参数则切换）",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {"type": "boolean", "description": "true=开启 false=关闭，不传则切换"}
+                    }
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "switch_persona",
+                "description": "切换AI人设和TTS模型（用户说「切换东雪莲」「切换永雏塔菲」「切换到xxx」时调用）",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "name": {"type": "string", "description": "角色名，可用: Azuma / Taffy"}
+                    },
+                    "required": ["name"]
+                }
+            }
+        },
     ]
 
 
@@ -344,6 +363,7 @@ class AIHandler:
     def _build_func_map(self):
         return {
             "download_jm_comic": self._call_jm_download,
+            "search_jm_comic": self._call_jm_search,
             "search_illust": self._call_pixiv_search,
             "illust_detail": self._call_pixiv_detail,
             "illust_ranking": self._call_pixiv_ranking,
@@ -355,6 +375,10 @@ class AIHandler:
             "search_bilibili_live": self._call_bili_search_live,
             "bilibili_live_following": self._call_bili_live_following,
             "download_bilibili_video": self._call_bili_download,
+            "synthesize_tts": self._call_synthesize_tts,
+            "switch_tts_language": self._call_switch_tts_language,
+            "toggle_ai_tts": self._call_toggle_ai_tts,
+            "switch_persona": self._call_switch_persona,
         }
 
     def _get_history(self, user_id: str) -> list[dict]:
@@ -386,6 +410,9 @@ class AIHandler:
         if isinstance(pdf_path, str) and pdf_path.endswith(".pdf"):
             self._task_files().append(pdf_path)
         return pdf_path
+
+    async def _call_jm_search(self, keyword: str, page: int = 1):
+        return await self.mcp.search_jm_comic(keyword=keyword, page=page)
 
     async def _call_pixiv_search(self, **kwargs):
         kwargs = {k: v for k, v in kwargs.items() if v is not None}
@@ -445,6 +472,37 @@ class AIHandler:
             self._task_files().append(path)
         return result
 
+    async def _call_synthesize_tts(self, text: str, language: str = None):
+        kwargs = {"text": text, "model_id": 0, "speaker_name": "Azuma", "language": language or "ZH"}
+        from tts import tts_mgr
+        kwargs["model_id"] = tts_mgr.model_id
+        kwargs["speaker_name"] = tts_mgr.speaker_name
+        wav_path = await self.mcp.synthesize(**kwargs)
+        if wav_path.startswith("ERROR:"):
+            return wav_path
+        self._task_files().append(wav_path)
+        return "语音已发送"
+
+    async def _call_switch_tts_language(self, language: str):
+        from tts.commands import handle_tts_switch
+        handle_tts_switch._default_lang = language.upper()
+        return f"已切换为{language.upper()}模式"
+
+    async def _call_toggle_ai_tts(self, enabled: bool = None):
+        from tts.commands import handle_tts_switch
+        current = getattr(handle_tts_switch, "_ai_tts_enabled", True)
+        if enabled is None:
+            enabled = not current
+        handle_tts_switch._ai_tts_enabled = enabled
+        return f"AI 自动语音已{'开启' if enabled else '关闭'}"
+
+    async def _call_switch_persona(self, name: str):
+        from tts import tts_mgr
+        from core.ai_handler import set_system_prompt
+        prompt = tts_mgr.switch_persona(name)
+        set_system_prompt(prompt)
+        return f"已切换为{name}"
+
     _files_by_task: "dict[int, list[str]]" = {}
 
     @staticmethod
@@ -475,7 +533,8 @@ class AIHandler:
         task_files.clear()
 
         history = self._get_history(user_id) if user_id else []
-        messages = [{"role": "system", "content": SYSTEM_PROMPT}] + history + [
+        system_content = SYSTEM_PROMPT or "你是东雪莲，一个可爱的虚拟主播。关注东雪莲谢谢喵～"
+        messages = [{"role": "system", "content": system_content}] + history + [
             {"role": "user", "content": text}
         ]
 

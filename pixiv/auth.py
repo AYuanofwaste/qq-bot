@@ -46,11 +46,24 @@ def _load_env():
 
 
 def _save_env(data: dict):
-    """Save env values, preserving existing unmodified keys."""
-    existing = _load_env()
-    existing.update(data)
-    lines = [f"{k}={v}\n" for k, v in sorted(existing.items())]
-    ENV_PATH.write_text("".join(lines), encoding="utf-8")
+    """Save env values by line-level replacement — preserves comments and ordering."""
+    if not ENV_PATH.exists():
+        ENV_PATH.write_text("", encoding="utf-8")
+    original = ENV_PATH.read_text(encoding="utf-8")
+    lines = original.splitlines(keepends=True)
+    found_keys: set[str] = set()
+    new_lines: list[str] = []
+    for line in lines:
+        m = re.match(r"^([A-Z_][A-Z0-9_]*)\s*=", line)
+        if m and m.group(1) in data:
+            new_lines.append(f"{m.group(1)}={data.pop(m.group(1))}\n")
+            found_keys.add(m.group(1))
+        else:
+            new_lines.append(line)
+    for k, v in data.items():
+        if k not in found_keys:
+            new_lines.append(f"{k}={v}\n")
+    ENV_PATH.write_text("".join(new_lines), encoding="utf-8")
 
 
 def get_refresh_token() -> str | None:

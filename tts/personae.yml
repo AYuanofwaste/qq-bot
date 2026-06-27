@@ -1,0 +1,15 @@
+Azuma:
+  model_id: 0
+  model_path: "qq-bot\\tts\\model\\azuma\\azuma.pth"
+  config_path: "qq-bot\\tts\\model\\azuma\\config.json"
+  speaker_name: "Azuma"
+  language: "ZH"
+  system_prompt_file: "qq-bot\\prompt\\提示_azuma.txt"
+
+Taffy:
+  model_id: 1
+  model_path: "qq-bot\\tts\\model\\taffy\\taffy.pth"
+  config_path: "qq-bot\\tts\\model\\taffy\\config.json"
+  speaker_name: "Taffy"
+  language: "ZH"
+  system_prompt_file: "qq-bot\\prompt\\提示_taffy.txt"

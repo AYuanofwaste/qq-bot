@@ -5,6 +5,7 @@ from pathlib import Path
 
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
+from tts.defaults import TTS_DEFAULTS
 
 logger = logging.getLogger("qq-bot.mcp")
 
@@ -15,6 +16,7 @@ class McpManager:
         self._jm_session: ClientSession | None = None
         self._pixiv_session: ClientSession | None = None
         self._bili_session: ClientSession | None = None
+        self._tts_session: ClientSession | None = None
 
     async def start(self):
         base = Path(__file__).resolve().parent.parent
@@ -59,6 +61,23 @@ class McpManager:
         await self._bili_session.initialize()
         logger.info("Bilibili MCP server connected")
 
+        await self._connect_tts()
+
+    async def _connect_tts(self):
+        base = Path(__file__).resolve().parent.parent
+        tts_params = StdioServerParameters(
+            command="python",
+            args=[str(base / "tts" / "mcp_server.py")],
+        )
+        tts_read, tts_write = await self._exit_stack.enter_async_context(
+            stdio_client(tts_params)
+        )
+        self._tts_session = await self._exit_stack.enter_async_context(
+            ClientSession(tts_read, tts_write)
+        )
+        await self._tts_session.initialize()
+        logger.info("TTS MCP server connected")
+
     async def close(self):
         await self._exit_stack.aclose()
 
@@ -85,6 +104,9 @@ class McpManager:
         if output_dir:
             kwargs["output_dir"] = output_dir
         return await self._call_jm("download_jm_comic", **kwargs)
+
+    async def search_jm_comic(self, keyword: str, page: int = 1) -> str:
+        return await self._call_jm("search_jm_comic", keyword=keyword, page=page)
 
     async def search_illust(
         self,
@@ -171,3 +193,32 @@ class McpManager:
 
     async def bili_search_live(self, keyword: str, page: int = 1) -> str:
         return await self._call_bili("search_live", keyword=keyword, page=page)
+
+    async def _call_tts(self, tool_name: str, **kwargs) -> str:
+        if not self._tts_session:
+            return "ERROR: TTS server not ready yet (model loading)"
+        result = await self._tts_session.call_tool(tool_name, kwargs)
+        if result.content and len(result.content) > 0:
+            return result.content[0].text
+        return ""
+
+    async def synthesize(
+        self,
+        text: str,
+        model_id: int = 0,
+        speaker_name: str = "Azuma",
+        sdp_ratio: float = TTS_DEFAULTS["sdp_ratio"],
+        noise: float = TTS_DEFAULTS["noise"],
+        noisew: float = TTS_DEFAULTS["noisew"],
+        length: float = TTS_DEFAULTS["length"],
+        language: str = "ZH",
+        auto_split: bool = True,
+    ) -> str:
+        kwargs = {
+            "text": text, "model_id": model_id, "speaker_name": speaker_name,
+            "sdp_ratio": sdp_ratio, "noise": noise, "noisew": noisew,
+            "length": length, "language": language, "auto_split": auto_split,
+        }
+        return await self._call_tts("synthesize", **kwargs)
+
+

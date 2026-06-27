@@ -15,6 +15,11 @@
       "type": "local",
       "command": ["python", "bilibili/server.py"],
       "enabled": true
+    },
+    "tts": {
+      "type": "local",
+      "command": ["python", "tts/mcp_server.py"],
+      "enabled": true
     }
   }
 }

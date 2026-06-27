@@ -12,3 +12,19 @@ bilibili/*_cookies.txt
 *.mp4
 *.mkv
 .opencode/
+
+# TTS 模型 / BERT 权重（太大，自动下载）
+tts/model/
+tts/bert/
+tts/emotional/
+tts/tts_output/
+
+# 通用二进制模式
+*.pth
+*.bin
+*.wav
+*_cookies.txt
+*.log
+
+# assets（非代码资源）
+rec/

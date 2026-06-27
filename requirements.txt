@@ -12,3 +12,45 @@ requests>=2.31.0
 cloudscraper>=1.2.0
 python-docx>=1.0.0
 tqdm>=4.65.0
+
+# ── Bert-VITS2 TTS 推理依赖 ──
+# torch + torchaudio: 需要 CUDA 支持，建议用以下命令安装：
+#   pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu124
+torch>=2.0.0
+torchaudio>=2.0.0
+transformers>=4.30.0,<5
+tokenizers<0.14
+librosa==0.9.2
+numpy<2
+protobuf
+tiktoken
+soxr
+scipy
+numba
+
+# 文本处理（中/日/英）
+jieba
+pypinyin
+cn2an
+mecab-python3
+unidic-lite
+fugashi
+g2p_en
+sentencepiece
+pykakasi
+jaconv
+pyopenjtalk-prebuilt
+phonemizer
+langid
+cmudict
+num2words
+Unidecode
+
+# 其他
+fastapi>=0.100.0
+PyYAML
+beautifulsoup4>=4.0.0
+loguru
+av
+psutil
+vector_quantize_pytorch

@@ -1,0 +1,4 @@
+interface:
+  display_name: "合乎周礼"
+  short_description: "将现代中文改写为高赞评论式、白话易懂的周礼翻译腔风格"
+  default_prompt: "使用 $speak-zhouli 把这句话改写成合乎周礼的白话翻译腔。"

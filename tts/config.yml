@@ -1,0 +1,74 @@
+# 全局配置（训练 + 推理共用）
+dataset_path: "Data/Azuma"
+mirror: ""
+openi_token: ""
+
+resample:
+  sampling_rate: 44100
+  in_dir: "audios/raw"
+  out_dir: "audios/wavs"
+
+preprocess_text:
+  transcription_path: "filelists/你的数据集文本.list"
+  cleaned_path: ""
+  train_path: "filelists/train.list"
+  val_path: "filelists/val.list"
+  config_path: "config.json"
+  val_per_lang: 4
+  max_val_total: 12
+  clean: true
+
+bert_gen:
+  config_path: "config.json"
+  num_processes: 2
+  device: "cuda"
+  use_multi_device: false
+
+emo_gen:
+  config_path: "config.json"
+  num_processes: 2
+  device: "cuda"
+  use_multi_device: false
+
+train_ms:
+  env:
+    MASTER_ADDR: "localhost"
+    MASTER_PORT: 10086
+    WORLD_SIZE: 1
+    LOCAL_RANK: 0
+    RANK: 0
+  base:
+    use_base_model: false
+    repo_id: "Stardust_minus/Bert-VITS2"
+    model_image: "Bert-VITS2_2.3底模"
+  model: "models"
+  config_path: "configs/config.json"
+  num_workers: 0
+  spec_cache: false
+  keep_ckpts: 8
+
+webui:
+  device: "cuda"
+  model: "models/G_4000.pth"
+  config_path: "configs/config.json"
+  port: 7860
+  share: true
+  debug: false
+  language_identification_library: "langid"
+
+server:
+  port: 9880
+  device: "cuda"
+  models:
+    - model: "model\\azuma\\azuma.pth"
+      config: "model\\azuma\\config.json"
+      device: "cuda"
+      language: "ZH"
+    - model: "model\\taffy\\taffy.pth"
+      config: "model\\taffy\\config.json"
+      device: "cuda"
+      language: "ZH"
+
+translate:
+  app_key: ""
+  secret_key: ""
