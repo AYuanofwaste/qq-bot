@@ -1,4 +1,4 @@
-# QQ Bot — 东雪莲/永雏塔菲
+# QQ Bot — 东雪莲/永雏塔菲（纯ai写，不喜勿喷）
 
 基于 **NapCatQQ (OneBot v11)**，集成 **AI 聊天（工具调用）**、**Bert-VITS2 v2.3 TTS 语音合成**、**JMComic/Pixiv/Bilibili** 服务的多模块 QQ 机器人。
 
